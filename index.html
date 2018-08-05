@@ -1,0 +1,236 @@
+<html>
+    <head>
+        <title>LightDom script tests</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="src/lightdom.js"></script>
+		<style>
+			.shock{
+				background-color:#dfd;
+			}
+		</style>
+    </head>
+    <body>
+        <div class = 'wrapper'>
+            <div>
+                This div has no class.<br>
+                These do:
+            </div>
+            <div class = 'd1 allDivs' id = 'div-d1'>
+				d1 
+				<div class = 'sub'>sub in 1</div>
+            </div>
+
+            <div class = 'd2 allDivs' id = 'div-d2' data-da = 'test data A val' data-db = 'test data B val'>
+				d2
+				<div class = 'sub'>sub in 2</div>
+            </div>
+
+        </div>    
+
+        <div class = 'allDivs'>
+            outside wrapper
+        </div>        
+
+		<div id = 'logger'>
+
+		</div>
+
+		<script>
+            (function () {
+				//this is only to simplify console logging:
+				function logg(text, callback){
+					console.groupCollapsed(text);
+					callback();
+					console.groupEnd();
+				}
+				
+				/////////////////////////////////////////////////////////////////////////
+				//inits
+				
+				var vanillaD2Elem = document.querySelector('.d2');
+				console.log('vanillaD2Elem:',vanillaD2Elem);
+
+                //These work fine:
+                let lAllDivs = l('.wrapper .allDivs');
+                let lDiv2 = l('.wrapper .d2');
+				let lNoElem = l('#adfadsf');
+				
+				lAllDivs[0].style.backgroundColor = 'rgba(0,0,100,0.5)';
+				lAllDivs.each(el => {
+					el.style.border = '1px dotted green';
+				});
+				lAllDivs.css('color','red');
+				console.log (lNoElem.css('padding-left'));
+				console.log(lAllDivs.css('color'));
+				console.groupEnd();
+				
+				console.groupCollapsed('filtering');
+				lAllDivs.filter('.d2').css('padding-left','20px').css('margin-top','20px');
+				console.groupEnd();
+
+				console.groupCollapsed('finding');
+				console.log(lAllDivs.find('.sub'));
+				lAllDivs.find('.sub').css('text-decoration','underline');
+				console.groupEnd();
+
+				console.groupCollapsed('parent');
+				console.log(lDiv2.parent());
+				console.groupEnd();
+
+				console.groupCollapsed('closest');
+				let subs = l('.sub');
+				console.log(subs.closest('div'));
+				console.groupEnd();
+
+				console.groupCollapsed('addClass');
+				l('.d2 .sub').addClass('shock');
+				console.groupEnd();
+
+				console.groupCollapsed('html');
+				l('.d2 .sub').html('<p>changed html</p>');
+				console.groupEnd();
+
+				console.groupCollapsed('append');
+				l('.d2').append('<p>appended to .d2: test test</p>');
+				console.groupEnd();
+
+				console.groupCollapsed('is');
+				console.log(l('.d2').is('div'));
+				console.log(l('.d2').is('.d2'));
+				console.log(l('.d2').is('p'));
+				console.log(l('.d2').is('.blah'));
+				console.groupEnd();
+
+				console.groupCollapsed('events');
+				l('.d1,.d2').on('click', e => {
+					console.log('clicked: ',e);
+				});
+				console.groupEnd();
+				/*
+				
+				/////////////////////////////////////////////////////////////////////////
+				console.groupCollapsed('Basics');
+
+                //methods:
+				
+				logg('setAttribute',()=>{
+					y('.allDivs').setAttribute('style', 'text-decoration:underline');//OK
+				});
+				
+				logg('getAttribute',()=>{
+					console.log('result:', lAllDivs.getAttribute('style'));//OK
+				});
+				
+
+				logg('chaining',()=>{
+					//lAllDivs.setAttribute('style','border-left:3px solid red').
+					//		setAttribute('title','title changed');//OK
+
+				});
+
+				
+				//properties
+				logg('setting simple prop, like .title',()=>{
+	                y('.allDivs').title = 'title changed 2';//OK
+				});
+
+				logg('setting prop.subProp, like style.color',()=>{
+					lAllDivs.style.color = 'green';//OK!
+					lDiv2.style.color = 'orange';//OK!
+				});
+				
+				logg('playing with innerHTML',()=>{
+					console.log('d2 reading:', y('.d2').innerHTML);//OK
+					y('.d2 .inside').innerHTML = '<p>aaaaaaaaaaaaa</p>';//OK
+				});
+
+				logg('playing with clientWidth',()=>{
+					console.log('d2 reading:', y('.d2').clientWidth);//OK
+					
+				});
+					
+				logg('seting onclick event by .addEventListener',()=>{
+					y('.allDivs').addEventListener('click',event => {
+						y(event.target).style.color = 'brown';//ok!
+					});//OK
+				});
+
+
+				console.groupEnd();//end of basics
+				
+			
+				/////////////////////////////////////////////////////////////////////////
+				//Reading/writing props.subprops including methods like classList.add()
+                
+				console.groupCollapsed('Writing props.subprops');
+
+                logg('adding classList.add',()=>{
+					lAllDivs.classList.add('shock');//ok
+				});
+
+                logg('reading style.color:',()=>{
+					console.log('result:', lDiv2.style.color);
+				});	
+
+                logg('reading string dataset',()=>{
+					console.log('result:', y('.d2').dataset.da);//ok
+				});
+				
+                logg('reading string classname:', ()=>{
+					console.log('result:', lAllDivs.className);
+				});
+	
+
+                logg('setting and reading user prop', () => {
+					vanillaD2Elem.userProp = {userSubProp: {userSubSubProp: 'user sub sub prop val'}};
+					console.log('result:', lDiv2.userProp.userSubProp.userSubSubProp);
+				});
+				
+				logg('setting and reading user prop', () => {
+					//lDiv2.userProp = {userSubProp: {userSubSubProp: 'user sub sub prop val CHANGED'}};//OK
+					lDiv2.userProp.userSubProp.userSubSubProp = 'CHANGED';
+					console.log('result:', lDiv2.userProp.userSubProp.userSubSubProp);//ok!
+				});
+				
+				
+				
+				console.groupEnd();//end of "Reading/writing props.subprops"
+				
+				/////////////////////////////////////////////////////////////////////////
+				//Experiments with new stuff
+                				
+				console.group('Experiments with new stuff');
+				
+				logg('foreach', () => {
+					lDiv2.forEach(elem => {
+						elem.style.textShadow ='-2px -2px 2px #bbb';
+					});//.style.paddingLeft = '30px';
+				});
+				
+				logg('filtering:', () => {
+					let filtered = y(lAllDivs.filter(el => el.tagName === 'DIV'));
+					filtered.style.border = '10px solid #aad';
+				});
+				
+					
+				console.groupEnd();// end of experiments with new stuff
+		
+                /////////
+                //problems:
+				console.groupCollapsed('Known problems');
+                
+				console.log('object style');
+				console.log('result:',lAllDivs.style);//wrong - returns proxied y
+				
+				console.log('object dataset');
+				console.log('result:',lAllDivs.dataset);//wrong - returns proxied y
+			
+				console.groupEnd();//Known problems
+				*/
+
+            }());
+
+		</script>
+    </body>
+</html>    
