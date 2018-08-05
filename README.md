@@ -8,7 +8,7 @@ Just the basics things known in jquery, like:
 ```
 l('.someClass').append('<p>a paragraph</p>');
 l('.someClass').css('color','red');
-l.each(node => {
+l('.someClass').each(node => {
     node.style.border = '1px dotted green';
 });
 ```
