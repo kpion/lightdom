@@ -1,5 +1,5 @@
 /*
-parameter wrapper
+queryselector wrapper
 https://github.com/kpion/lightdom
 v. 1.0.0
 */

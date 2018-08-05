@@ -1,6 +1,6 @@
 # LightDom
 
-Just another DOM selector, as small as possible (~190 lines of code)
+A very small DOM selector, using native JS (ES6) (~190 lines of code)
 
 
 Just the basics things known in jquery, like:
