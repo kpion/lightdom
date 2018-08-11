@@ -1,9 +1,9 @@
 # LightDom
 
-A very small DOM selector, using native JS (ES6) (~190 lines of code)
+A very lightweight DOM selector, using native JS (ES6) (~190 lines of code)
 
 
-Just the basics things known in jquery, like:
+Just the basics things known from jquery, like:
 
 ```
 l('.someClass').append('<p>a paragraph</p>');
