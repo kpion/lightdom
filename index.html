@@ -57,9 +57,17 @@
 				let lNoElem = l('#adfadsf');
 				
 				lAllDivs[0].style.backgroundColor = 'rgba(0,0,100,0.5)';
-				lAllDivs.each(el => {
-					el.style.border = '1px dotted green';
+				
+				//iterating as html nodes:
+				lAllDivs.forEach(el => {
+					el.style.border = '2px dotted green';
 				});
+
+				//iterating as lighdom
+				lAllDivs.each(el => {
+					el.css('opacity','0.9');
+				});
+
 				lAllDivs.css('color','red');
 				console.log (lNoElem.css('padding-left'));
 				console.log(lAllDivs.css('color'));

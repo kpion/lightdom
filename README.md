@@ -1,7 +1,8 @@
 # LightDom
 
-A very lightweight DOM selector, using native JS (ES6) (~190 lines of code)
+A very lightweight DOM selector, using native JS (ES6) (~200 lines of code). Inherited from the vanilla Array class.
 
+## Examples
 
 Just the basics things known from jquery, like:
 
