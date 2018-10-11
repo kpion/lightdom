@@ -8,7 +8,7 @@ Just the basics things similar to the ones from jquery.
 
 ### The HTML we'll manipulate:
 
-```
+```html
     <style>
         .selected{
             font-weight:bold;
@@ -18,7 +18,7 @@ Just the basics things similar to the ones from jquery.
 ```
 ### Code:
 
-```
+```js
     l('#list').css({border: '1px dotted #00a',opacity: 0.5});
     l('#list').append('<li>new item</li>');
     l('#list').on('click',event => {
@@ -46,9 +46,9 @@ Right now the only way is to just copy &amp; paste the following file somewhere:
 ## Change log
 
 1.0 - August 2018 : 
- - initial release
+- initial release
 
 2.1 - October 2018 :
 - the .append .prepend .before and .after methods now accept not only (string) HTML but also nodes.
- - constructor accepts simply a Node (previously a HTMLElement)
- - constructor now accepts (string) HTML
+- constructor accepts simply a Node (previously a HTMLElement)
+- constructor now accepts (string) HTML
