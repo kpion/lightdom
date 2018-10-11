@@ -1,15 +1,12 @@
 /*
+LightDom 2.1 
 
-querySelector wrapper, inheriting from the Array class.
+Lightweight querySelectorAll wrapper and DOM manipulation clas, inheriting from the Array class.
 
 https://github.com/kpion/lightdom
-v. 1.1.0
 
-Log:
-1.0.1 - initial vesion
-1.1.0 - the .each function now passes new LightDom (element), use .forEach if HTMLElement/Element is needed.
-        .parent returns only unique parents.
 */
+
 (function (window) {
  
     class LightDom extends Array{
@@ -26,12 +23,12 @@ Log:
             if (typeof parameter === 'string' && parameter !== '') {
                 //Object.assign(this, Array.from(this.context.querySelectorAll(parameter)));
                 parameter = parameter.trim();
-                if (parameter[0] === '<') {
+                if (parameter[0] === '<') {//(string)html
                     nodes = Array.from(this.create(parameter));
                 }else{                
                     nodes = Array.from(this.context.querySelectorAll(parameter));
                 }
-            } else if (parameter instanceof Element) {//used to be HTMLElement before v. 1.0.1
+            } else if (parameter instanceof Node) {//includes HTMLElement, Element, Node etc
                 this.push (parameter);
             } else if (parameter instanceof NodeList || parameter instanceof HTMLCollection || parameter instanceof Array) {
                 //Object.assign(this, Array.from(parameter));
@@ -40,7 +37,10 @@ Log:
                 //copying ourselves to ourselves
                 //Object.assign(this, parameter);
                 nodes = parameter;
-            }else{
+            } else if (typeof parameter === 'function') {
+                //callback to call when document is ready (DOMContentLoaded or immediately if already loaded)
+                this.ready(parameter);
+            } else{
                 //acceptable in certain situations only, like calling e.g. l().setLogging(false);
             }
             if(nodes){//only if adding from array / other LightDom instance
@@ -53,6 +53,7 @@ Log:
             return this;
         }
 
+        //`each` which wraps every single element in LightDom
         each(callback){
             this.forEach(node => callback(new LightDom(node)));
             return this;
@@ -64,18 +65,7 @@ Log:
             return this;
         }
 
-        //rather for internal use only, used e.g. by .parent() or .closest(), returns array of *nodes*
-        unique () {
-            return super.filter((node, pos) => {
-              return super.indexOf(node) == pos;
-            });
-        };
 
-        //rather for internal use only, similar to Array.reverse, except it doesn't modify current object 
-        //but only returns a modified one. Returns array of *nodes*
-        reversed(){
-            return Array.from(this).reverse();
-        }
 
         filter(parameter = null){
             if(typeof parameter === 'string'){
@@ -110,9 +100,11 @@ Log:
         parent () {
             let result = new LightDom();
             this.forEach(node => {
-                result.add(node.parentNode)
+                if(!result.includes (node.parentNode)){
+                   result.add(node.parentNode)
+                }
             })
-            return result.unique();
+            return result;
         };
 
         // Get the closest (by selector) parents of all nodes
@@ -120,13 +112,13 @@ Log:
             let result = new LightDom();
             this.forEach(node => {
                 while((node = node.parentNode) && (node !== document)){
-                    if(node.matches (parameter)){
+                    if(node.matches (parameter) && !result.includes (node)){
                         result.add(node);
                         break;
                     }
                 }
             })
-            return result.unique();
+            return result;
         };
 
         is(parameter){
@@ -134,21 +126,24 @@ Log:
         }
 
         css(property,val = null){
-            if(val === null){
+            if(val === null && typeof property !== 'object'){//reading
                 return this[0] ? this[0].style[property] : null;
             }
+            //setting:
+            const properties = (typeof property == 'object')?property:{[property]: val};
             return this.forEach(node => {
-                node.style[property] = val;
+                Object.assign(node.style,properties);
             })
-
         }
 
         attr(property,val = null){
-            if(val === null){
+            if(val === null && typeof property !== 'object'){//reading
                 return this[0] ? this[0].getAttribute(property) : null;
             }
+            //setting:
+            const properties = (typeof property == 'object')?property:{[property]: val};
             return this.forEach(node => {
-                node.setAttribute (property,val);
+                Object.entries(properties).forEach( ([prop,val]) => {node.setAttribute (prop,val)})
             })
         }       
         
@@ -170,7 +165,7 @@ Log:
             })            
         }        
 
-        html(val){
+        html(val = null){
             if(val === null){
                 return this[0] ? this[0].innerHTML : '';
             }
@@ -183,7 +178,7 @@ Log:
             return this.html('');
         }
 
-        text(val){
+        text(val = null){
             if(val === null){
                 return this[0] ? this[0].textContent : '';
             }
@@ -197,67 +192,34 @@ Log:
                 node.insertAdjacentHTML (position, html);
             })              
         }
-        /*
-        insertAdjacentElement(position, element){
-            let lSrc = element instanceof LightDom ? element : new LightDom(element);
-            return this.forEach(node => {
-                //node.insertAdjacentElement (position, lElement[0]);
-                lSrc.forEach(srcElem => {
-                    node.insertAdjacentElement (position, srcElem);
-                    
-                })
-            })              
-        }
-        */
-
-        /** 
-         * "smart" one - will insert a string html or an element (node); Depending on the type of the argument.
-         * @param param - whatever (html, node, nodelist, another lightdom etc)
-         * @param reverse - only when param is nodelist, lightdom etc - useful when doing .prepend and .after - 
-         * we want to reverse the order of the elements first. 
-         */ 
-        insertElement(position, param, reverse = false){
-            if(typeof param === 'string'){
-                return this.insertAdjacentHTML(position, param);
-            }
-            let lSrc = param instanceof LightDom ? param : new LightDom(param);
-            if(reverse && lSrc.length > 0){
-                lSrc = lSrc.reversed();
-            }
-            return this.forEach(node => {
-                //node.insertAdjacentElement (position, lElement[0]);
-                lSrc.forEach(srcElem => {
-                    node.insertAdjacentElement (position, srcElem);
-                    
-                })
-            })         
-        }
-
+ 
         append(param){
-            return this.insertElement ('beforeend', param);
+            return this._insertElement (param, 'beforeend', 'append');
+        }
+
+        //alias for .append
+        appendChild(param){
+            return this.append(param);
         }
 
         prepend(param){
-            return this.insertElement ('afterbegin', param, true);
+            return this._insertElement (param, 'afterbegin', 'prepend');
         }
 
         before(param){
-            return this.insertElement ('beforebegin', param);
+            return this._insertElement (param, 'beforebegin', 'before');
         } 
 
         after(param){
-            return this.insertElement ('afterend', param, true);
+            return this._insertElement (param, 'afterend', 'after');
         }        
 
-        //creates a new element (does not add), rather for internal use only
+        //creates and returns new element(s) from (string)html (does not add them here), rather for internal use only
         create(html){
+            //we can't use document.createDocumentFragment(); because it doesn't have .innerHTML
             var div = document.createElement('div');
-            //var div = document.createDocumentFragment();
             div.innerHTML = html;
-            console.log('insider:');
-            console.log('made of',html);
-            console.dir(div);
-            return div.childNodes;
+            return new LightDom (div.childNodes);
         }
 
         on(type, callback, options = false){
@@ -265,11 +227,58 @@ Log:
                 node.addEventListener(type, callback, options);
            });
         }
+        
+        //this one will just work on a document regardless of nodes in our collection
+        ready(callback){
+            let callbackEvent = ()=>{
+                callback();
+                document.removeEventListener("DOMContentLoaded",callbackEvent);
+            };
+            if (document.readyState === "loading") {//might be 'loading' or 'complete'
+                document.addEventListener("DOMContentLoaded", callbackEvent);
+            
+            } else {//dom already loaded, so the above event will never fire, so:  
+                callback();
+            }
+            return this;
+        }
+
+         /** 
+         * [INTERNAL] A very generic (internal) method. Will insert a string html or an element (node); 
+         * Depending on the type of the argument.
+         * @param param - whatever (html, node, nodelist, another lightdom etc)
+         * @param position - only when param is (string)html -  one of insertAdjacentHTML 'position' values - like 'beforeend' etc
+         * @param action - only when param is nodelist, lightdom etc, one of methods like 'append', 'prepend', 'before', 'after'
+         */ 
+        _insertElement(param, position, action){
+            //a (string) HTML
+            if(typeof param === 'string'){
+                return this.insertAdjacentHTML(position, param);
+            }
+            //we are going with the .append .prepend etc. 
+            let lSrc = param instanceof LightDom ? param : new LightDom(param);
+            //if this is just a single Node, for optimization sake we'll just insert it, 
+            //we don't need playing with documentFragment for this single Node
+            if(lSrc.length === 1){
+                return this.forEach(node => {
+                    node[action](lSrc[0].cloneNode(true));
+                 }) 
+            }
+            //preparing whole fragment to insert later:
+            let fragment = document.createDocumentFragment();
+            lSrc.forEach(srcElem => {
+                fragment.appendChild(srcElem.cloneNode(true));
+            })
+            //actual inserting:
+            return this.forEach(node => {
+               node[action](fragment.cloneNode(true));
+            })       
+        }      
 
     }
 
     /////////
-    //End of class Yes definition
+    //End of class LightDom definition
 
     function lightdom(parameter, context = null) {
         return new LightDom(parameter, context);
