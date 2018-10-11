@@ -46,9 +46,9 @@ Right now the only way is to just copy &amp; paste the following file somewhere:
 ## Change log
 
 1.0 - August 2018 : 
-        initial release
+ - initial release
 
 2.1 - October 2018 :
-        the .append .prepend .before and .after methods now accept not only (string) HTML but also nodes.
-        constructor accepts simply a Node (previously a HTMLElement)
-        constructor now accepts (string) HTML
+- the .append .prepend .before and .after methods now accept not only (string) HTML but also nodes.
+ - constructor accepts simply a Node (previously a HTMLElement)
+ - constructor now accepts (string) HTML
