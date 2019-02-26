@@ -31,7 +31,7 @@
         <div class = 'allDivs'>
             outside wrapper
         </div>        
-
+		<input type = 'text' id = 'input' placeholder = 'testing key down, and click events'>
 		<div id = 'logger'>
 
 		</div>
@@ -111,132 +111,11 @@
 				console.groupEnd();
 
 				console.groupCollapsed('events');
-				l('.d1,.d2').on('click', e => {
-					console.log('clicked: ',e);
+				l('.d1,.d2, #input').on('click keydown', e => {
+					console.log('clicked or key: ',e);
 				});
 				console.groupEnd();
-				/*
 				
-				/////////////////////////////////////////////////////////////////////////
-				console.groupCollapsed('Basics');
-
-                //methods:
-				
-				logg('setAttribute',()=>{
-					y('.allDivs').setAttribute('style', 'text-decoration:underline');//OK
-				});
-				
-				logg('getAttribute',()=>{
-					console.log('result:', lAllDivs.getAttribute('style'));//OK
-				});
-				
-
-				logg('chaining',()=>{
-					//lAllDivs.setAttribute('style','border-left:3px solid red').
-					//		setAttribute('title','title changed');//OK
-
-				});
-
-				
-				//properties
-				logg('setting simple prop, like .title',()=>{
-	                y('.allDivs').title = 'title changed 2';//OK
-				});
-
-				logg('setting prop.subProp, like style.color',()=>{
-					lAllDivs.style.color = 'green';//OK!
-					lDiv2.style.color = 'orange';//OK!
-				});
-				
-				logg('playing with innerHTML',()=>{
-					console.log('d2 reading:', y('.d2').innerHTML);//OK
-					y('.d2 .inside').innerHTML = '<p>aaaaaaaaaaaaa</p>';//OK
-				});
-
-				logg('playing with clientWidth',()=>{
-					console.log('d2 reading:', y('.d2').clientWidth);//OK
-					
-				});
-					
-				logg('seting onclick event by .addEventListener',()=>{
-					y('.allDivs').addEventListener('click',event => {
-						y(event.target).style.color = 'brown';//ok!
-					});//OK
-				});
-
-
-				console.groupEnd();//end of basics
-				
-			
-				/////////////////////////////////////////////////////////////////////////
-				//Reading/writing props.subprops including methods like classList.add()
-                
-				console.groupCollapsed('Writing props.subprops');
-
-                logg('adding classList.add',()=>{
-					lAllDivs.classList.add('shock');//ok
-				});
-
-                logg('reading style.color:',()=>{
-					console.log('result:', lDiv2.style.color);
-				});	
-
-                logg('reading string dataset',()=>{
-					console.log('result:', y('.d2').dataset.da);//ok
-				});
-				
-                logg('reading string classname:', ()=>{
-					console.log('result:', lAllDivs.className);
-				});
-	
-
-                logg('setting and reading user prop', () => {
-					vanillaD2Elem.userProp = {userSubProp: {userSubSubProp: 'user sub sub prop val'}};
-					console.log('result:', lDiv2.userProp.userSubProp.userSubSubProp);
-				});
-				
-				logg('setting and reading user prop', () => {
-					//lDiv2.userProp = {userSubProp: {userSubSubProp: 'user sub sub prop val CHANGED'}};//OK
-					lDiv2.userProp.userSubProp.userSubSubProp = 'CHANGED';
-					console.log('result:', lDiv2.userProp.userSubProp.userSubSubProp);//ok!
-				});
-				
-				
-				
-				console.groupEnd();//end of "Reading/writing props.subprops"
-				
-				/////////////////////////////////////////////////////////////////////////
-				//Experiments with new stuff
-                				
-				console.group('Experiments with new stuff');
-				
-				logg('foreach', () => {
-					lDiv2.forEach(elem => {
-						elem.style.textShadow ='-2px -2px 2px #bbb';
-					});//.style.paddingLeft = '30px';
-				});
-				
-				logg('filtering:', () => {
-					let filtered = y(lAllDivs.filter(el => el.tagName === 'DIV'));
-					filtered.style.border = '10px solid #aad';
-				});
-				
-					
-				console.groupEnd();// end of experiments with new stuff
-		
-                /////////
-                //problems:
-				console.groupCollapsed('Known problems');
-                
-				console.log('object style');
-				console.log('result:',lAllDivs.style);//wrong - returns proxied y
-				
-				console.log('object dataset');
-				console.log('result:',lAllDivs.dataset);//wrong - returns proxied y
-			
-				console.groupEnd();//Known problems
-				*/
-
             }());
 
 		</script>

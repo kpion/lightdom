@@ -222,9 +222,14 @@ https://github.com/kpion/lightdom
             return new LightDom (div.childNodes);
         }
 
+        /**
+         * @param {*} type - can be one event or many divided by space or a comma, like 'click keydown'
+         */
         on(type, callback, options = false){
+            //todo:  type.split(/[ ,]+/).forEach(ev => console.log(ev));
+            const types = type.split(/[ ,]+/);
             return this.forEach(node => {
-                node.addEventListener(type, callback, options);
+                types.forEach(eventType => node.addEventListener(eventType, callback, options));
            });
         }
         
