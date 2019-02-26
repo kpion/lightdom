@@ -226,7 +226,6 @@ https://github.com/kpion/lightdom
          * @param {*} type - can be one event or many divided by space or a comma, like 'click keydown'
          */
         on(type, callback, options = false){
-            //todo:  type.split(/[ ,]+/).forEach(ev => console.log(ev));
             const types = type.split(/[ ,]+/);
             return this.forEach(node => {
                 types.forEach(eventType => node.addEventListener(eventType, callback, options));
